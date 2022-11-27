@@ -6,6 +6,7 @@ The code contained here is the result of work by Casini and Montanucci.
 
 - The Python script `stampa_imm_qgis` is a script to be used inside QGIS. It contains function to save the input images and target masks for the segmentation models.
 - The iPython notebook contains all the code needed to train and evaluate models.   
+- The remaining contents are support `.csv` and `.json` files that made deveopment easier.
 
 Running those experiments should reflect the results we obtained and described in the paper.  
 
