@@ -9,6 +9,7 @@ The code contained here is the result of work by Casini and Montanucci.
 
 Running those experiments should reflect the results we obtained and described in the paper.  
 
-Upon request we can provide the weights for the trained model we used (their size is too large for GitHub).  
+Datasets, outputs and model weights are available at the following link (their size is too large for GitHub):  
+[Google Drive](https://bit.ly/tell_segmentation)  
 If you are interested or need support with code an email to `luca.casini7@unibo.it`.  
 
