@@ -7,13 +7,9 @@ import json
 
 
 
-PATH = "C:/Users/lucac/OneDrive - Alma Mater Studiorum Università di Bologna/archeo_2"
-# PATH = "D:/archeo_montanucci/"
-os.chdir(PATH)
 
 def centroid2vec(cx,cy):
     name = "test_tile"
-    #cx,cy = (5000313.360,4019792.303)
     tile_meters = 1000
 
     left = cx - (tile_meters/2)
@@ -41,10 +37,10 @@ def centroid2vec(cx,cy):
 #Serve per salvare un'immagine per ogni sito, dove il sito sta al centro dell'immagine. 
 def save_tile(cx,cy,
             tile_meters=500,shiftx=0,shifty=0,
-            outputSize=512, rasters=["bing"],
-            fn = "D:/archeo_montanucci/tiles/prova5.jpg", uzbekistan=False,fn1=""):
+            outputSize=512,
+            fn = "", uzbekistan=False,fn1=""):
 
-    #rasters = ["bing"]
+    rasters = ["bing"]
 
     project = QgsProject.instance()
     manager = project.layoutManager()
@@ -72,9 +68,9 @@ def save_tile(cx,cy,
     bottom = cy - (tile_meters/2)
     extent = QgsRectangle(left,top,right,bottom)
     if(uzbekistan==True):
-        df_sites = pd.read_csv("D:/archeo_montanucci/testsetUzbeko_v2.csv")
+        df_sites = pd.read_csv("testsetUzbeko_v2.csv")
         df_sites.loc[df_sites['ShortCode'] == fn1, ['extent']] = extent
-        df_sites.to_csv("D:/archeo_montanucci/testsetUzbeko_v2.csv", index=False)
+        df_sites.to_csv("testsetUzbeko_v2.csv", index=False)
 
     map = QgsLayoutItemMap(layout)
     map.setRect(0,0,outputSize,outputSize)
@@ -99,42 +95,7 @@ def save_tile(cx,cy,
 
 import pandas as pd
 
-def save_trainset(masks=False):
-    #open pickle
-    df = pd.read_csv(r"./trainset.csv")
-    
-    tile_meters=1000
-    
-    if masks:
-        df.apply(lambda x: save_tile(x.cx,x.cy,
-            tile_meters,
-            fn=PATH+"/dataset_street/train/masks/"+str(x.id)+".png"),
-            axis=1)
-    else:
-        df.apply(lambda x: save_tile(x.cx,x.cy,
-            tile_meters,
-            fn=PATH+"/dataset_street/train/sites/"+str(x.id)+".jpg"),
-            axis=1)
-    print("Done")
 
-#save_trainset()
-
-def save_maysan(masks=False):
-    #open pickle
-    df = pd.read_csv(r"./maysan.csv")
-    print(df.shape)
-    tile_meters=1000
-    if masks:
-        df.apply(lambda x: save_tile(x.cx,x.cy,
-            tile_meters,
-            fn=PATH+"/dataset_street/maysan/masks/"+str(x.entry_id)+".png"),
-            axis=1)
-    else:
-        df.apply(lambda x: save_tile(x.cx,x.cy,
-            tile_meters,
-            fn=PATH+"/dataset_street/maysan/sites/"+str(x.entry_id)+".jpg"),
-            axis=1)
-    print("Done")
     
     
 
@@ -148,21 +109,21 @@ def save_dataset_1000(masks,TEST=None,NEGS=None,TRAIN=None):
         if TEST:
             for i,s in df_maysan.iterrows():
                 save_tile(s.cx,s.cy,tile_meters=1000,outputSize=1024,
-                    fn=PATH+"/dataset_street/maysan/masks/"+str(s.entry_id)+".png"
+                    fn="/datasets/bing_1k/maysan/masks/"+str(s.entry_id)+".png"
                 )
                 if i%100==0: print("img:",i)
             print("Mask test done")
         if TRAIN:    
             for i,s in df_sites.iterrows():
                 save_tile(s.cx,s.cy,tile_meters=1000,outputSize=1024,
-                    fn=PATH+"/dataset_street/train/masks/"+str(s.entry_id)+".png"
+                    fn="/datasets/bing_1k/train/masks/"+str(s.entry_id)+".png"
                 )
                 if i%100==0: print("img:",i)
             print("Mask train done")
         if NEGS:
             for i,s in df_negs.iterrows():
                 save_tile(s.cx,s.cy,tile_meters=1000,outputSize=1024,
-                    fn=PATH+"/dataset_street/train/masks/"+str(s.id)+".png"
+                    fn="/datasets/bing_1k/train/masks/"+str(s.id)+".png"
                 )
                 if i%100==0: print("img:",i)
             print("Mask negs done")
@@ -171,21 +132,21 @@ def save_dataset_1000(masks,TEST=None,NEGS=None,TRAIN=None):
         if TRAIN:
             for i,s in df_sites.iterrows():
                 save_tile(s.cx,s.cy,tile_meters=1000,outputSize=1024,
-                    fn=PATH+"/dataset_corona/train/sites/"+str(s.entry_id)+".jpg"
+                    fn="/datasets/bing_1k/train/sites/"+str(s.entry_id)+".jpg"
                 )
                 if i%100==0: print("img:",i)
             print("sites train done")
         if NEGS:
             for i,s in df_negs.iterrows():
                 save_tile(s.cx,s.cy,tile_meters=1000,outputSize=1024,
-                    fn=PATH+"/dataset_corona/train/sites/"+str(s.id)+".jpg"
+                    fn="/datasets/bing_1k/train/sites/"+str(s.id)+".jpg"
                 )
                 if i%100==0: print("img:",i)
             print("sites negs done")
         if TEST:
             for i,s in df_maysan.iterrows():
                 save_tile(s.cx,s.cy,tile_meters=1000,outputSize=1024,
-                    fn=PATH+"/dataset_corona/maysan/sites/"+str(s.entry_id)+".jpg"
+                    fn="/datasets/bing_1k/maysan/sites/"+str(s.entry_id)+".jpg"
                 )
                 if i%100==0: print("img:",i)
             print("sites test done") 
@@ -196,18 +157,18 @@ def save_coor(cx,cy,idx):
     "name": "tile"+str(idx) ,
     "cx": cx,
     "cy": cy}
-    with open("D:/archeo_montanucci/coor_maysan.json") as fp:
+    with open("coor_maysan.json") as fp:
         listObj = json.load(fp)
     
     listObj.append(dictionary)
-    with open("D:/archeo_montanucci/coor_maysan.json", "w") as json_file:
+    with open("coor_maysan.json", "w") as json_file:
         json.dump(listObj, json_file,
                 indent=4,
                 separators=(',', ': '))
 
 
 #dato un polygon, ritorna la lista dei vertici
-def extract_vertex_from_polygon(fn='D:/archeo_montanucci/sel_area.shp'):
+def extract_vertex_from_polygon(fn='sel_area.shp'):
     layer=QgsVectorLayer(fn)
     iter = layer.getFeatures()
     for feature in iter:
@@ -219,30 +180,23 @@ def extract_vertex_from_polygon(fn='D:/archeo_montanucci/sel_area.shp'):
         points=points[0][0]
         return(points)
 
-
-def tile_maysan(masks,fn='D:/archeo_montanucci/sel_area.shp'):
+def tile_maysan(masks,fn='sel_area_512.shp'):
     points=extract_vertex_from_polygon(fn)[:-1]
-    # print(points)
+    #print(points[1][0])
     points_order=np.sort(np.array(points).ravel())
-    print("points",points_order)
+    #print(points_order)
     coordinateX=points_order[4:]
     coordinateY=points_order[:-4]
-    #print(coordinateX,coordinateY)
+    #print(coordinateY)
     est=max(coordinateX)
     nord=max(coordinateY)
     ovest=min(coordinateX)
     sud=min(coordinateY)
-    print(est)
-    print(nord)
-    print(ovest)
-    print(sud)
     
     tile_spost=500
     cx=ovest+tile_spost
     cy=sud+tile_spost
-    
     print((est-cx)/(tile_spost*2))
-    
     iterorr=round((est-cx)/(tile_spost*2)+0.01)
     itervert=round((nord-cy)/(tile_spost*2)+0.01)
     print(iterorr)
@@ -257,10 +211,10 @@ def tile_maysan(masks,fn='D:/archeo_montanucci/sel_area.shp'):
             if(i==1): cx=ovest+tile_spost
             if(masks==True):
                 save_tile(cx,cy,tile_meters=1000,outputSize=1024,
-                fn=PATH+"/PNAS/new_maysan/tiles_maysan_corona_1024_v2/masks/"+str(i)+".png")
+                fn="/datasets/maysan_sel_tile/masks/"+str(i)+".png")
             else:
                 save_tile(cx,cy,tile_meters=1000,outputSize=1024,
-                fn=PATH+"/PNAS/new_maysan/tiles_maysan_corona_1024_v2/sites/"+str(i)+".jpg")
+                fn="/datasets/maysan_sel_tile/sites/"+str(i)+".jpg")
                 #save_coor(cx,cy,i)
             if(i%iterorr)==0: scorr_vert=True
         else:
@@ -268,10 +222,10 @@ def tile_maysan(masks,fn='D:/archeo_montanucci/sel_area.shp'):
             cx=ovest+tile_spost
             if(masks==True):
                 save_tile(cx,cy,tile_meters=1000,outputSize=1024,
-                fn=PATH+"/PNAS/new_maysan/tiles_maysan_corona_1024_v2/masks/"+str(i)+".png")
+                fn="/datasets/maysan_sel_tile/masks/"+str(i)+".png")
             else:
                 save_tile(cx,cy,tile_meters=1000,outputSize=1024,
-                fn=PATH+"/PNAS/new_maysan/tiles_maysan_corona_1024_v2/sites/"+str(i)+".jpg")
+                fn="/datasets/maysan_sel_tile/sites/"+str(i)+".jpg")
                 #save_coor(cx,cy,i)
             scorr_vert=False
     print("Fatto!")
@@ -288,21 +242,21 @@ def save_dataset_2000(filter,masks,TEST=None,NEGS=None,TRAIN=None):
         if TEST:
             for i,s in df_maysan.iterrows():
                 save_tile(s.cx,s.cy,tile_meters=2000,outputSize=2048,
-                    fn=PATH+"/dataset2000_corona/maysan/masks/"+str(s.entry_id)+".png"
+                    fn="/datasets/bing_2k/maysan/masks/"+str(s.entry_id)+".png"
                 )
                 if i%100==0: print("img:",i)
             print("Mask test done")
         if TRAIN:    
             for i,s in df_sites.iterrows():
                 save_tile(s.cx,s.cy,tile_meters=2000,outputSize=2048,
-                    fn=PATH+"/dataset2000_corona/train/masks/"+str(s.entry_id)+".png"
+                    fn="/datasets/bing_2k/train/masks/"+str(s.entry_id)+".png"
                 )
                 if i%100==0: print("img:",i)
             print("Mask train done")
         if NEGS:
             for i,s in df_negs.iterrows():
                 save_tile(s.cx,s.cy,tile_meters=2000,outputSize=2048,
-                    fn=PATH+"/dataset2000_corona/train/masks/"+str(s.id)+".png"
+                    fn="/datasets/bing_2k/train/masks/"+str(s.id)+".png"
                 )
                 if i%100==0: print("img:",i)
             print("Mask negs done")
@@ -311,33 +265,33 @@ def save_dataset_2000(filter,masks,TEST=None,NEGS=None,TRAIN=None):
         if TRAIN:
             for i,s in df_sites.iterrows():
                 save_tile(s.cx,s.cy,tile_meters=2000,outputSize=2048,
-                    fn=PATH+"/dataset2000_corona/train/sites/"+str(s.entry_id)+".jpg"
+                    fn="/datasets/bing_2k/train/sites/"+str(s.entry_id)+".jpg"
                 )
                 if i%100==0: print("img:",i)
             print("sites train done")
         if NEGS:
             for i,s in df_negs.iterrows():
                 save_tile(s.cx,s.cy,tile_meters=2000,outputSize=2048,
-                    fn=PATH+"/dataset2000_corona/train/sites/"+str(s.id)+".jpg"
+                    fn="/datasets/bing_2k/train/sites/"+str(s.id)+".jpg"
                 )
                 if i%100==0: print("img:",i)
             print("sites negs done")
         if TEST:
             for i,s in df_maysan.iterrows():
                 save_tile(s.cx,s.cy,tile_meters=2000,outputSize=2048,
-                    fn=PATH+"/dataset2000_corona/maysan/sites/"+str(s.entry_id)+".jpg"
+                    fn="/datasets/bing_2k/maysan/sites/"+str(s.entry_id)+".jpg"
                 )
                 if i%100==0: print("img:",i)
             print("sites test done") 
 
 def save_dataset_2000_uzbeko(masks):
-    df_sites = pd.read_csv(PATH+"testsetUzbeko_v2.csv")
+    df_sites = pd.read_csv("testsetUzbeko_v2.csv")
     print(df_sites.shape)
     # masks
     if masks:
         for i,s in df_sites.iterrows():
             save_tile(s.cx,s.cy,tile_meters=2000,outputSize=2048,
-                    fn=PATH+"/datasetUzbeko/masks/"+str(s.ShortCode)+".png",
+                    fn="/datasetUzbeko/masks/"+str(s.ShortCode)+".png",
                     uzbekistan=True,fn1=str(s.ShortCode)
                 )
             if i%100==0: print("img:",i)
@@ -348,25 +302,8 @@ def save_dataset_2000_uzbeko(masks):
        
         for i,s in df_sites.iterrows():
             save_tile(s.cx,s.cy,tile_meters=2000,outputSize=2048,
-                fn=PATH+"/datasetUzbeko/sites/"+str(s.ShortCode)+".jpg"
+                fn="/datasetUzbeko/sites/"+str(s.ShortCode)+".jpg"
             )
             if i%100==0: print("img:",i)
         print("sites train done")
        
-       
-       
-def save_grid(layer_name):
-    layer=QgsProject.instance().mapLayersByName(layer_name)[0]
-    c = 0
-    for f in layer.getFeatures():
-        if c%10==0:
-            print(c)
-        g = f.geometry()
-        cx = g.centroid().asPoint()[0]
-        cy = g.centroid().asPoint()[1]
-        #print(cx,cy)
-        save_tile(cx,cy,tile_meters=1000,shiftx=0,shifty=0,outputSize=1024,fn=PATH + "/PNAS/new_maysan/grid/"+str(c)+".jpg", 
-        rasters=["Bing Aerial"],
-        uzbekistan=False,fn1="")
-        c += 1
-    print("Done")
